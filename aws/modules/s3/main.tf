@@ -18,8 +18,19 @@ resource "aws_s3_object" "this" {
   etag     = filemd5("${path.module}/web/${each.key}.html")
 }
 
+# resource "aws_s3_bucket_website_configuration" "this" {
+#   bucket = aws_s3_bucket.this.id
+
+#   index_document {
+#     suffix = "index.html"
+#   }
+
+#   error_document {
+#     key = "error.html"
+#   }
+
 resource "aws_s3_bucket_website_configuration" "this" {
-  bucket = aws_s3_bucket.this.id
+  bucket = aws_s3_bucket.this.bucket
 
   index_document {
     suffix = "index.html"
@@ -28,6 +39,16 @@ resource "aws_s3_bucket_website_configuration" "this" {
   error_document {
     key = "error.html"
   }
+
+  routing_rule {
+    condition {
+      key_prefix_equals = "docs/"
+    }
+    redirect {
+      replace_key_prefix_with = "documents/"
+    }
+  }
+}
 
 resource "aws_s3_bucket_policy" "this" {
   bucket = aws_s3_bucket.this.id
