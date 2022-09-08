@@ -9,8 +9,8 @@ resource "aws_route53_record" "web" {
   type    = "A"
 
   alias {
-    name    = aws_s3_bucket.this.website_domain
-    zone_id = aws_s3_bucket.this.hosted_zone_id
+    name                   = aws_s3_bucket.this.website_domain
+    zone_id                = aws_s3_bucket.this.hosted_zone_id
     evaluate_target_health = true
   }
 }
