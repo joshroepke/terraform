@@ -66,7 +66,16 @@
 #           composer install --prefer-dist
 #           php bin/phpunit
 
-
+    # - name: Configure AWS Credentials
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: us-east-2
+    #     role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+    #     role-external-id: ${{ secrets.AWS_ROLE_EXTERNAL_ID }}
+    #     role-duration-seconds: 1200
+    #     role-session-name: MySessionName
 
 ######
 name: 'Terraform'
@@ -99,12 +108,24 @@ jobs:
     - name: print working-directory
       run: |
         pwd 
-     
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
+    
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
       with:
-        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }} #arn:aws:iam::123456789100:role/my-github-actions-role
+        # aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        # aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ca-central-1
+
+    - name: Check access
+      run: |
+        aws s3 ls
+      
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    # - name: Setup Terraform
+    #   uses: hashicorp/setup-terraform@v1
+    #   with:
+    #     cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
